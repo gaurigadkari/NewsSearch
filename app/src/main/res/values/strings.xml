@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">NewsApp</string>
+    <string name="enter_search_query_here">Enter Search query here</string>
+</resources>
