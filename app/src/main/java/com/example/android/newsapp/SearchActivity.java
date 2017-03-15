@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -49,6 +50,12 @@ public class SearchActivity extends AppCompatActivity {
         grdResults.setLayoutManager(staggeredGridLayoutManager);
         adapter = new ArticleArrayAdapter(this, articles);
         grdResults.setAdapter(adapter);
+
+
+
+
+
+
         //Picasso picasso = Picasso.with(context);
         //picasso.setIndicatorsEnabled(true);
         //picasso.setLoggingEnabled(true);

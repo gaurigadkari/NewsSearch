@@ -5,9 +5,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Article {
+public class Article implements Serializable{
     String webUrl;
 
     public String getWebUrl() {

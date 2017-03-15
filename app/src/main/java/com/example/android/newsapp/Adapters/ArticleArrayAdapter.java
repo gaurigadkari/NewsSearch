@@ -2,6 +2,7 @@ package com.example.android.newsapp.Adapters;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,11 +13,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.android.newsapp.Activities.ArticleActivity;
 import com.example.android.newsapp.Article;
 import com.example.android.newsapp.R;
+import com.example.android.newsapp.SearchActivity;
 
 
 import java.util.ArrayList;
+
+import static android.R.attr.start;
 
 public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapter.ArticleViewHolder>{
     private ArrayList<Article> articles;
@@ -30,7 +35,15 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
 
     @Override
     public void onBindViewHolder(ArticleViewHolder holder, int position) {
-        Article currentArticle = articles.get(position);
+        final Article currentArticle = articles.get(position);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, ArticleActivity.class);
+                intent.putExtra("article", currentArticle);
+                context.startActivity(intent);
+            }
+        });
         holder.headline.setText(currentArticle.getHeadline());
         //holder.webUrl.setText(currentArticle.getWebUrl());
         Log.d("DEBUG", currentArticle.getThumbNail());
