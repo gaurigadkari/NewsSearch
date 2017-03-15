@@ -49,6 +49,9 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
         Log.d("DEBUG", currentArticle.getThumbNail());
         if(currentArticle.getThumbNail().length() > 0) {
             String imageUrl = currentArticle.getThumbNail();
+            //Glide.clear(holder.thumbNail);
+            //holder.thumbNail.setImageResource(0);
+
             //holder.thumbNail.setImageURI(Uri.parse("http://www.nytimes.com/images/2017/02/12/arts/12KIDMAN/12KIDMAN-thumbWide-v2.jpg"));
             Glide.with(context).load(imageUrl).error(R.mipmap.ic_launcher).into(holder.thumbNail);
         }

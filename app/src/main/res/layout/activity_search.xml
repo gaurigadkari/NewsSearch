@@ -6,24 +6,38 @@
     android:layout_height="match_parent"
     tools:context="com.example.android.newsapp.SearchActivity">
 
-    <EditText
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            android:fitsSystemWindows="true"
+            />
+
+
+
+
+   <!-- <EditText
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:id="@+id/etSearchtext"
         android:layout_marginRight="10dp"
         android:hint="@string/enter_search_query_here"
-        />
+        android:layout_below="@id/toolbar"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/btnSearch"
         android:text="Search"
-        android:layout_toRightOf="@id/etSearchtext"/>
+        android:layout_toRightOf="@id/etSearchtext"
+        android:layout_below="@id/toolbar"/>-->
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/etSearchtext"
+        android:layout_below="@id/toolbar"
         android:id="@+id/grdNewsResults"
         android:layout_marginTop="10dp">
 
