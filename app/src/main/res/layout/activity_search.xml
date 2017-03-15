@@ -7,7 +7,7 @@
     tools:context="com.example.android.newsapp.SearchActivity">
 
     <EditText
-        android:layout_width="250dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:id="@+id/etSearchtext"
         android:layout_marginRight="10dp"
@@ -19,13 +19,14 @@
         android:id="@+id/btnSearch"
         android:text="Search"
         android:layout_toRightOf="@id/etSearchtext"/>
-    <GridView
+
+    <android.support.v7.widget.RecyclerView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/etSearchtext"
         android:id="@+id/grdNewsResults"
         android:layout_marginTop="10dp">
 
-    </GridView>
+    </android.support.v7.widget.RecyclerView>
 
 </RelativeLayout>
