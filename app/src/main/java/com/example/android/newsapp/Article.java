@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class Article implements Serializable{
     String webUrl;
 
+
     public String getWebUrl() {
         return webUrl;
     }
@@ -28,6 +29,7 @@ public class Article implements Serializable{
     String thumbNail;
 
     public Article (JSONObject jsonObject){
+
         try {
             this.webUrl = jsonObject.getString("web_url");
             this.headline = jsonObject.getJSONObject("headline").getString("main");
