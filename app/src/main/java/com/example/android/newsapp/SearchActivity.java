@@ -2,6 +2,7 @@ package com.example.android.newsapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.Toolbar;
@@ -14,12 +15,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import android.support.design.widget.Snackbar;
 
 import com.example.android.newsapp.Adapters.ArticleArrayAdapter;
 import com.example.android.newsapp.Fragment.FilterFragment;
 import com.example.android.newsapp.Model.Doc;
 import com.example.android.newsapp.Model.ResponseBody;
 import com.example.android.newsapp.Network.ApiInterface;
+import com.example.android.newsapp.Utilities.Utilities;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -43,6 +46,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.android.newsapp.R.string.art;
+import static com.example.android.newsapp.Utilities.Utilities.isNetworkAvailable;
 
 public class SearchActivity extends AppCompatActivity {
     //@BindView(R.id.btnSearch) Button btnSearch;
@@ -62,7 +66,7 @@ public class SearchActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         context = this;
         articles = new ArrayList<>();
-        StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
+        StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         //linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         grdResults.setLayoutManager(staggeredGridLayoutManager);
         adapter = new ArticleArrayAdapter(this, articles);
@@ -77,7 +81,11 @@ public class SearchActivity extends AppCompatActivity {
             }
         };
         grdResults.addOnScrollListener(scrollListener);
-
+        if(Utilities.isNetworkAvailable(context) && Utilities.isOnline()) {
+            retroNetworkCall("", 0);
+        } else {
+            Snackbar.make(findViewById(R.id.searchActivity), "Make sure your device is connected to the internet", Snackbar.LENGTH_LONG).show();
+        }
 
 
 
@@ -87,9 +95,15 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
+
+
     private void loadNextDataFromApi(int newPage) {
         //networkCall(searchQuery, newPage);
-        retroNetworkCall(searchQuery,newPage);
+        if(Utilities.isNetworkAvailable(context) && Utilities.isOnline()) {
+            retroNetworkCall(searchQuery, newPage);
+        } else {
+            Snackbar.make(findViewById(R.id.searchActivity), "Make sure your device is connected to the internet", Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -146,7 +160,11 @@ public class SearchActivity extends AppCompatActivity {
         }
         articles.clear();
         //networkCall(query, page);
-        retroNetworkCall(query, page);
+        if(Utilities.isNetworkAvailable(context) && Utilities.isOnline()) {
+            retroNetworkCall(query, page);
+        } else {
+            Snackbar.make(findViewById(R.id.searchActivity), "Make sure your device is connected to the internet", Snackbar.LENGTH_LONG).show();
+        }
 
     }
     public void retroNetworkCall(String query, int page){
@@ -172,10 +190,10 @@ public class SearchActivity extends AppCompatActivity {
         String sortString;
         int sort = sharedPreferences.getInt("sort",0);
         if(sort == 0){
-            sortString = "Oldest";
+            sortString = "Newest";
         }
         else {
-            sortString = "Newest";
+            sortString = "Oldest";
         }
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -187,7 +205,11 @@ public class SearchActivity extends AppCompatActivity {
         }
         params.put("api-key", "ad717c2ec12d4ec28f3463dc0e619bc2");
         params.put("page", page + "");
-        params.put("q", query);
+        if(query!="") {
+            params.put("q", query);
+        } else {
+            searchQuery = "";
+        }
         params.put("sort",sortString);
 
         if(date!="") {

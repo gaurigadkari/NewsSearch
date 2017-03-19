@@ -2,6 +2,7 @@ package com.example.android.newsapp.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.android.newsapp.Article;
 import com.example.android.newsapp.R;
+import com.example.android.newsapp.Utilities.Utilities;
 
 import org.parceler.Parcels;
 
@@ -25,7 +27,6 @@ public class ArticleActivity extends AppCompatActivity {
     private ShareActionProvider shareActionProvider;
     Intent intent;
     String urlShare;
-    Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +43,12 @@ public class ArticleActivity extends AppCompatActivity {
                 return true;
             }
         });
-        webView.loadUrl(article.getWebUrl());
+        if(Utilities.isNetworkAvailable(this) && Utilities.isOnline()) {
+            webView.loadUrl(article.getWebUrl());
+        } else {
+            Snackbar.make(findViewById(R.id.articleActivity), "Make sure your device is connected to the internet", Snackbar.LENGTH_LONG).show();
+        }
+
         urlShare = article.getWebUrl();
     }
     public void attachShareIntentAction() {
