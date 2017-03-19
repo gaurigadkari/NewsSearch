@@ -17,6 +17,8 @@ import android.widget.Toast;
 import com.example.android.newsapp.Article;
 import com.example.android.newsapp.R;
 
+import org.parceler.Parcels;
+
 import static com.example.android.newsapp.R.layout.article;
 
 public class ArticleActivity extends AppCompatActivity {
@@ -30,7 +32,7 @@ public class ArticleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_article);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        Article article = (Article) getIntent().getSerializableExtra("article");
+        Article article = (Article) Parcels.unwrap(getIntent().getParcelableExtra("article"));
         WebView webView = (WebView) findViewById(R.id.wvArticle);
         webView.setWebViewClient(new WebViewClient(){
             @Override

@@ -19,6 +19,8 @@ import com.example.android.newsapp.R;
 import com.example.android.newsapp.SearchActivity;
 
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 
 import static android.R.attr.start;
@@ -40,15 +42,15 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, ArticleActivity.class);
-                intent.putExtra("article", currentArticle);
+                intent.putExtra("article", Parcels.wrap(currentArticle));
                 context.startActivity(intent);
             }
         });
-        holder.headline.setText(currentArticle.getHeadline());
+        holder.headline.setText(currentArticle.getHeadline().getMain());
         //holder.webUrl.setText(currentArticle.getWebUrl());
-        Log.d("DEBUG", currentArticle.getThumbNail());
-        if(currentArticle.getThumbNail().length() > 0) {
-            String imageUrl = currentArticle.getThumbNail();
+//        Log.d("DEBUG", currentArticle.getMultimedia().get(0).getUrl());
+        if(currentArticle.getMultimedia().size() > 0) {
+            String imageUrl = currentArticle.getMultimedia().get(0).getUrl();
             //Glide.clear(holder.thumbNail);
             //holder.thumbNail.setImageResource(0);
 

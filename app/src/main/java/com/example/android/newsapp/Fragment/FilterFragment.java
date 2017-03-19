@@ -17,6 +17,7 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.DatePicker.*;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.Calendar;
@@ -56,6 +57,7 @@ public class FilterFragment extends DialogFragment implements DatePickerDialog.O
         super.onViewCreated(view, savedInstanceState);
         //final DatePicker datePicker = (DatePicker) view.findViewById(R.id.datePicker);
         etDate = (EditText) view.findViewById(R.id.etDate);
+        Spinner spinner = (Spinner) view.findViewById(R.id.sort);
         final CheckBox chkArts = (CheckBox) view.findViewById(R.id.checkbox_art);
         final CheckBox chkFashion = (CheckBox) view.findViewById(R.id.checkbox_fashion_and_style);
         final CheckBox chkSports = (CheckBox) view.findViewById(R.id.checkbox_sports);

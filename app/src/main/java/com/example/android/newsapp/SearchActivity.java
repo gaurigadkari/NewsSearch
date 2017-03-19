@@ -8,20 +8,18 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.*;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.Toast;
 
 import com.example.android.newsapp.Adapters.ArticleArrayAdapter;
 import com.example.android.newsapp.Fragment.FilterFragment;
+import com.example.android.newsapp.Model.Doc;
+import com.example.android.newsapp.Model.ResponseBody;
+import com.example.android.newsapp.Network.ApiInterface;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -32,13 +30,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cz.msebera.android.httpclient.Header;
-
-import static android.R.attr.id;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SearchActivity extends AppCompatActivity {
     //@BindView(R.id.btnSearch) Button btnSearch;
@@ -84,7 +84,8 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void loadNextDataFromApi(int newPage) {
-        networkCall(searchQuery, newPage);
+        //networkCall(searchQuery, newPage);
+        retroNetworkCall(searchQuery,newPage);
     }
 
     @Override
@@ -140,8 +141,32 @@ public class SearchActivity extends AppCompatActivity {
             Toast.makeText(this, "Search text can not be empty", Toast.LENGTH_LONG).show();
         }
         articles.clear();
-        networkCall(query, page);
+        //networkCall(query, page);
+        retroNetworkCall(query, page);
 
+    }
+    public void retroNetworkCall(String query, int page){
+        final String BASE_URL = "https://api.nytimes.com/svc/search/v2/";
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        ApiInterface apiInterface = retrofit.create(ApiInterface.class);
+        Call<ResponseBody> call = apiInterface.getSearchResults("227c750bb7714fc39ef1559ef1bd8329", query, page);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                Log.d("DEBUG",response.toString());
+                List<Article> responseArticles = response.body().getResponse().getArticles();
+                articles.addAll(responseArticles);
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.d("DEBUG",t.toString());
+            }
+        });
     }
     public void networkCall(String query,  int page){
         SharedPreferences sharedPreferences = context.getSharedPreferences("pref",Context.MODE_PRIVATE);
@@ -174,9 +199,9 @@ public class SearchActivity extends AppCompatActivity {
                 try {
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
 
-                    articles.addAll(Article.fromJSonArray(articleJsonResults));
-                    adapter.notifyDataSetChanged();
-                    Log.d("DEBUG",articles.toString());
+//                    articles.addAll(Article.fromJSonArray(articleJsonResults));
+//                    adapter.notifyDataSetChanged();
+//                    Log.d("DEBUG",articles.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
