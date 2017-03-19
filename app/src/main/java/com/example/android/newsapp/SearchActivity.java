@@ -30,7 +30,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,6 +41,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static com.example.android.newsapp.R.string.art;
 
 public class SearchActivity extends AppCompatActivity {
     //@BindView(R.id.btnSearch) Button btnSearch;
@@ -147,12 +151,53 @@ public class SearchActivity extends AppCompatActivity {
     }
     public void retroNetworkCall(String query, int page){
         final String BASE_URL = "https://api.nytimes.com/svc/search/v2/";
+        SharedPreferences sharedPreferences = context.getSharedPreferences("pref",Context.MODE_PRIVATE);
+        String date = sharedPreferences.getString("date","");
+        //String newsDesk = sharedPreferences.getString("newsDesk","");
+        Boolean newsDeskBoolean = sharedPreferences.getBoolean("newsDeskBoolean",false);
+        Boolean art = sharedPreferences.getBoolean("art", false);
+        Boolean fashion = sharedPreferences.getBoolean("fashion", false);
+        Boolean sports = sharedPreferences.getBoolean("sports", false);
+        String newsDesk = "news_desk:(";
+        if(art){
+            newsDesk = newsDesk + "\"Art\" ";
+        }
+        if(fashion){
+            newsDesk = newsDesk + "\"Fashion\" ";
+        }
+        if(sports){
+            newsDesk = newsDesk + "\"Sports\" ";
+        }
+        newsDesk = newsDesk + ")";
+        String sortString;
+        int sort = sharedPreferences.getInt("sort",0);
+        if(sort == 0){
+            sortString = "Oldest";
+        }
+        else {
+            sortString = "Newest";
+        }
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+        Map<String, String> params = new HashMap<>();
+        if(newsDeskBoolean) {
+            params.put("fq", newsDesk);
+        }
+        params.put("api-key", "ad717c2ec12d4ec28f3463dc0e619bc2");
+        params.put("page", page + "");
+        params.put("q", query);
+        params.put("sort",sortString);
+
+        if(date!="") {
+            params.put("begin_date", date);
+        }
+
+
         ApiInterface apiInterface = retrofit.create(ApiInterface.class);
-        Call<ResponseBody> call = apiInterface.getSearchResults("227c750bb7714fc39ef1559ef1bd8329", query, page);
+        Call<ResponseBody> call = apiInterface.getSearchResultsWithFilter(params);
+
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
@@ -172,6 +217,7 @@ public class SearchActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = context.getSharedPreferences("pref",Context.MODE_PRIVATE);
         String date = sharedPreferences.getString("date","");
         String newsDesk = sharedPreferences.getString("newsDesk","");
+        int sort = sharedPreferences.getInt("sort",0);
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
         RequestParams params = new RequestParams();

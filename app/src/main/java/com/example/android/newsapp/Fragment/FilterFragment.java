@@ -30,22 +30,24 @@ import static com.example.android.newsapp.R.id.btnSave;
 import static com.example.android.newsapp.R.id.etDate;
 
 
-public class FilterFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener, DatePicker.OnDateChangedListener{
+public class FilterFragment extends DialogFragment {
     Context mContext;
     EditText etDate = null;
     String beginDate;
+    DatePickerDialog.OnDateSetListener date;
     // handle the date selected
-    @Override
-    public void onDateSet(DatePicker view, int year, int month, int day) {
-        // store the values selected into a Calendar instance
-//        final Calendar c = Calendar.getInstance();
-//        c.set(Calendar.YEAR, year);
-//        c.set(Calendar.MONTH, monthOfYear);
-//        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-        etDate.setText((month+1) + "/" + day + "/" + year);
-        beginDate = year +"" +(month+1) + day;
-    }
+//    @Override
+//    public void onDateSet(DatePicker view, int year, int month, int day) {
+//        // store the values selected into a Calendar instance
+////        final Calendar c = Calendar.getInstance();
+////        c.set(Calendar.YEAR, year);
+////        c.set(Calendar.MONTH, monthOfYear);
+////        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+//
+//        etDate.setText((month+1) + "/" + day + "/" + year);
+//        beginDate = year +"" +(month+1) + day;
+//    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -57,25 +59,58 @@ public class FilterFragment extends DialogFragment implements DatePickerDialog.O
         super.onViewCreated(view, savedInstanceState);
         //final DatePicker datePicker = (DatePicker) view.findViewById(R.id.datePicker);
         etDate = (EditText) view.findViewById(R.id.etDate);
-        Spinner spinner = (Spinner) view.findViewById(R.id.sort);
+        final Spinner spinner = (Spinner) view.findViewById(R.id.sort);
         final CheckBox chkArts = (CheckBox) view.findViewById(R.id.checkbox_art);
         final CheckBox chkFashion = (CheckBox) view.findViewById(R.id.checkbox_fashion_and_style);
         final CheckBox chkSports = (CheckBox) view.findViewById(R.id.checkbox_sports);
         Button btnSave = (Button) view.findViewById(R.id.btnSave);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("pref",Context.MODE_PRIVATE);
+        if(sharedPreferences.getBoolean("art", false)){
+            chkArts.setChecked(true);
+        }
+        if(sharedPreferences.getBoolean("fashion", false)){
+            chkFashion.setChecked(true);
+        }
+        if(sharedPreferences.getBoolean("sports", false)){
+            chkSports.setChecked(true);
+        }
+        etDate.setText(sharedPreferences.getString("displayDate", ""));
+        int sortOrder = sharedPreferences.getInt("sort", 0);
+        spinner.setSelection(sortOrder);
+
+        date = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int month,
+                                  int day) {
+                etDate.setText((month+1) + "/" + day + "/" + year);
+                beginDate = year +"" +(month+1) + day;
+            }
+
+        };
         etDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatePickerFragment newFragment = new DatePickerFragment();
-                newFragment.show(getFragmentManager(), "datePicker");
+//                DatePickerFragment newFragment = new DatePickerFragment();
+//                newFragment.show(getFragmentManager(), "datePicker");
+                final Calendar c = Calendar.getInstance();
+                int year = c.get(Calendar.YEAR);
+                int month = c.get(Calendar.MONTH);
+                int day = c.get(Calendar.DAY_OF_MONTH);
+                new DatePickerDialog(getActivity(), date, year, month, day).show();
 
             }
         });
 
+
+
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getDialog().dismiss();
+
                 String date = etDate.getText().toString();
+                //String sort = "sort=" + spinner.getSelectedItemPosition();
+                int sort = spinner.getSelectedItemPosition();
                 boolean news_desk = (chkArts.isChecked() || chkFashion.isChecked() || chkSports.isChecked());
                 String newsDesk = "news_desk:(";
                 if(chkArts.isChecked()){
@@ -92,10 +127,18 @@ public class FilterFragment extends DialogFragment implements DatePickerDialog.O
                 SharedPreferences sharedPref = context.getSharedPreferences("pref",Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString("date",beginDate);
+                editor.putBoolean("newsDeskBoolean",news_desk);
+                editor.putString("displayDate", date);
+                editor.putInt("sort",sort);
                 if(news_desk) {
                     editor.putString("newsDesk", newsDesk);
                 }
+                editor.putBoolean("art",chkArts.isChecked());
+                editor.putBoolean("fashion",chkFashion.isChecked());
+                editor.putBoolean("sports", chkSports.isChecked());
                 editor.commit();
+                getDialog().dismiss();
+
             }
         });
 
@@ -140,13 +183,6 @@ public class FilterFragment extends DialogFragment implements DatePickerDialog.O
 
         // Create a new instance of TimePickerDialog and return it
         return new DatePickerDialog(getActivity(), listener, year, month, day);
-
-    }
-
-
-
-    @Override
-    public void onDateChanged(DatePicker datePicker, int year, int month, int day) {
 
     }
 }
