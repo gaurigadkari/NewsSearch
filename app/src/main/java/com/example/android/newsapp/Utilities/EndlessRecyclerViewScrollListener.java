@@ -1,4 +1,4 @@
-package com.example.android.newsapp;
+package com.example.android.newsapp.Utilities;
 
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;

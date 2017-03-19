@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -24,6 +25,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import com.example.android.newsapp.R;
+import com.example.android.newsapp.databinding.FragmentFilterBinding;
 
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 import static com.example.android.newsapp.R.id.btnSave;
@@ -31,6 +33,7 @@ import static com.example.android.newsapp.R.id.etDate;
 
 
 public class FilterFragment extends DialogFragment {
+    private FragmentFilterBinding binding;
     Context mContext;
     EditText etDate = null;
     String beginDate;
@@ -51,19 +54,27 @@ public class FilterFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_filter, container);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_filter, container, false);
+        View view = binding.getRoot();
+        return view;
 
     }
     @Override
     public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //final DatePicker datePicker = (DatePicker) view.findViewById(R.id.datePicker);
-        etDate = (EditText) view.findViewById(R.id.etDate);
-        final Spinner spinner = (Spinner) view.findViewById(R.id.sort);
-        final CheckBox chkArts = (CheckBox) view.findViewById(R.id.checkbox_art);
-        final CheckBox chkFashion = (CheckBox) view.findViewById(R.id.checkbox_fashion_and_style);
-        final CheckBox chkSports = (CheckBox) view.findViewById(R.id.checkbox_sports);
-        Button btnSave = (Button) view.findViewById(R.id.btnSave);
+        this.etDate = binding.etDate;
+                //(EditText) view.findViewById(R.id.etDate);
+        final Spinner spinner = binding.sort;
+                //= (Spinner) view.findViewById(R.id.sort);
+        final CheckBox chkArts = binding.checkboxArt;
+                //(CheckBox) view.findViewById(R.id.checkbox_art);
+        final CheckBox chkFashion = binding.checkboxFashionAndStyle;
+                //(CheckBox) view.findViewById(R.id.checkbox_fashion_and_style);
+        final CheckBox chkSports = binding.checkboxSports;
+                //(CheckBox) view.findViewById(R.id.checkbox_sports);
+        Button btnSave = binding.btnSave;
+                //(Button) view.findViewById(R.id.btnSave);
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("pref",Context.MODE_PRIVATE);
         if(sharedPreferences.getBoolean("art", false)){
             chkArts.setChecked(true);

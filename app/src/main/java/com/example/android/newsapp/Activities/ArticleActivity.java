@@ -3,6 +3,7 @@ package com.example.android.newsapp.Activities;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import com.example.android.newsapp.Article;
 import com.example.android.newsapp.R;
 import com.example.android.newsapp.Utilities.Utilities;
+import com.example.android.newsapp.databinding.ActivityArticleBinding;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import org.parceler.Parcels;
@@ -32,6 +34,7 @@ import static com.example.android.newsapp.R.layout.article;
 
 public class ArticleActivity extends AppCompatActivity {
     private ShareActionProvider shareActionProvider;
+    private ActivityArticleBinding binding;
     Intent intent;
     String urlShare;
     int requestCode = 100;
@@ -39,7 +42,9 @@ public class ArticleActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_article);
+        Toolbar toolbar = binding.toolbar;
+                //(Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Article article = (Article) Parcels.unwrap(getIntent().getParcelableExtra("article"));
 //        WebView webView = (WebView) findViewById(R.id.wvArticle);

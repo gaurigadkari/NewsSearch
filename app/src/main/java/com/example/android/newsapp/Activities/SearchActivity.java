@@ -2,6 +2,7 @@ package com.example.android.newsapp.Activities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.databinding.DataBindingUtil;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
@@ -15,17 +16,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import android.support.design.widget.Snackbar;
 
 import com.example.android.newsapp.Adapters.ArticleArrayAdapter;
 import com.example.android.newsapp.Article;
-import com.example.android.newsapp.EndlessRecyclerViewScrollListener;
+import com.example.android.newsapp.Utilities.EndlessRecyclerViewScrollListener;
 import com.example.android.newsapp.Fragment.FilterFragment;
-import com.example.android.newsapp.Model.Doc;
 import com.example.android.newsapp.Model.ResponseBody;
 import com.example.android.newsapp.Network.ApiInterface;
 import com.example.android.newsapp.R;
 import com.example.android.newsapp.Utilities.Utilities;
+import com.example.android.newsapp.databinding.ActivitySearchBinding;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -40,7 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 import retrofit2.Call;
@@ -48,10 +47,8 @@ import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.example.android.newsapp.R.string.art;
-import static com.example.android.newsapp.Utilities.Utilities.isNetworkAvailable;
-
 public class SearchActivity extends AppCompatActivity {
+    private ActivitySearchBinding binding;
     //@BindView(R.id.btnSearch) Button btnSearch;
     //@BindView(R.id.etSearchtext) EditText etQuery;
     RecyclerView grdResults;
@@ -64,11 +61,14 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
+        Toolbar toolbar;
+        toolbar = binding.toolbar;
+        //= (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
-        grdResults = (RecyclerView) findViewById(R.id.grdNewsResults);
+        grdResults = binding.grdNewsResults;
+        //grdResults = (RecyclerView) findViewById(R.id.grdNewsResults);
         context = this;
         articles = new ArrayList<>();
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
@@ -226,23 +226,28 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
                 Log.d("DEBUG", response.toString());
-                if (response.body().getStatus().equals("OK")) {
-                    //if (!(response.body().getResponse().equals(null))) {
+                Log.d("DEBUG", response.body().toString());
+                if (response.body() != null) {
+                    if (response.body().getStatus().equals("OK")) {
+                        //if (!(response.body().getResponse().equals(null))) {
                         List<Article> responseArticles = response.body().getResponse().getArticles();
-                        if(responseArticles.size() !=0){
-                        articles.addAll(responseArticles);
-                        adapter.notifyDataSetChanged();
-                    } else {
-                        if (page == 0) {
-                            Snackbar.make(findViewById(R.id.searchActivity), "No results found!!", Snackbar.LENGTH_LONG).show();
+                        if (responseArticles.size() != 0) {
+                            articles.addAll(responseArticles);
+                            adapter.notifyDataSetChanged();
                         } else {
-                            Snackbar.make(findViewById(R.id.searchActivity), "No more Search results", Snackbar.LENGTH_LONG).show();
+                            if (page == 0) {
+                                Snackbar.make(findViewById(R.id.searchActivity), "No results found!!", Snackbar.LENGTH_LONG).show();
+                            } else {
+                                Snackbar.make(findViewById(R.id.searchActivity), "No more Search results", Snackbar.LENGTH_LONG).show();
+                            }
                         }
+                    } else {
+                        Snackbar.make(findViewById(R.id.searchActivity), "Oops something went wrong!!", Snackbar.LENGTH_LONG).show();
                     }
+
                 } else {
                     Snackbar.make(findViewById(R.id.searchActivity), "Oops something went wrong!!", Snackbar.LENGTH_LONG).show();
                 }
-
             }
 
             @Override
