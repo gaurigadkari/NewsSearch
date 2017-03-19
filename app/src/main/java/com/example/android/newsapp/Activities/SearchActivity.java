@@ -1,4 +1,4 @@
-package com.example.android.newsapp;
+package com.example.android.newsapp.Activities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -18,10 +18,13 @@ import android.widget.Toast;
 import android.support.design.widget.Snackbar;
 
 import com.example.android.newsapp.Adapters.ArticleArrayAdapter;
+import com.example.android.newsapp.Article;
+import com.example.android.newsapp.EndlessRecyclerViewScrollListener;
 import com.example.android.newsapp.Fragment.FilterFragment;
 import com.example.android.newsapp.Model.Doc;
 import com.example.android.newsapp.Model.ResponseBody;
 import com.example.android.newsapp.Network.ApiInterface;
+import com.example.android.newsapp.R;
 import com.example.android.newsapp.Utilities.Utilities;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -51,12 +54,13 @@ import static com.example.android.newsapp.Utilities.Utilities.isNetworkAvailable
 public class SearchActivity extends AppCompatActivity {
     //@BindView(R.id.btnSearch) Button btnSearch;
     //@BindView(R.id.etSearchtext) EditText etQuery;
-    @BindView(R.id.grdNewsResults) RecyclerView grdResults;
+    RecyclerView grdResults;
     Context context = null;
     private EndlessRecyclerViewScrollListener scrollListener;
     private String searchQuery;
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +68,7 @@ public class SearchActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
+        grdResults = (RecyclerView) findViewById(R.id.grdNewsResults);
         context = this;
         articles = new ArrayList<>();
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
@@ -81,12 +86,11 @@ public class SearchActivity extends AppCompatActivity {
             }
         };
         grdResults.addOnScrollListener(scrollListener);
-        if(Utilities.isNetworkAvailable(context) && Utilities.isOnline()) {
+        if (Utilities.isNetworkAvailable(context) && Utilities.isOnline()) {
             retroNetworkCall("", 0);
         } else {
             Snackbar.make(findViewById(R.id.searchActivity), "Make sure your device is connected to the internet", Snackbar.LENGTH_LONG).show();
         }
-
 
 
         //Picasso picasso = Picasso.with(context);
@@ -96,10 +100,9 @@ public class SearchActivity extends AppCompatActivity {
     }
 
 
-
     private void loadNextDataFromApi(int newPage) {
         //networkCall(searchQuery, newPage);
-        if(Utilities.isNetworkAvailable(context) && Utilities.isOnline()) {
+        if (Utilities.isNetworkAvailable(context) && Utilities.isOnline()) {
             retroNetworkCall(searchQuery, newPage);
         } else {
             Snackbar.make(findViewById(R.id.searchActivity), "Make sure your device is connected to the internet", Snackbar.LENGTH_LONG).show();
@@ -121,7 +124,7 @@ public class SearchActivity extends AppCompatActivity {
                 FragmentManager fm = getSupportFragmentManager();
 
                 FilterFragment filterFragment = new FilterFragment();
-                filterFragment.show(fm,"Filters");
+                filterFragment.show(fm, "Filters");
                 //Toast.makeText(context, "hello", Toast.LENGTH_LONG).show();
                 //Open new Dialog Fragment for Filters
                 return true;
@@ -133,7 +136,7 @@ public class SearchActivity extends AppCompatActivity {
                 searchQuery = query;
                 search(query);
                 searchView.clearFocus();
-                searchView.setQuery("",false);
+                searchView.setQuery("", false);
                 return true;
             }
 
@@ -147,9 +150,8 @@ public class SearchActivity extends AppCompatActivity {
     }
 
 
-
     //@OnClick(R.id.btnSearch)
-    public void search(String query){
+    public void search(String query) {
         //String query = etQuery.getText().toString();
 
         //Toast.makeText(this, "Search text is "+query, Toast.LENGTH_LONG).show();
@@ -160,39 +162,39 @@ public class SearchActivity extends AppCompatActivity {
         }
         articles.clear();
         //networkCall(query, page);
-        if(Utilities.isNetworkAvailable(context) && Utilities.isOnline()) {
+        if (Utilities.isNetworkAvailable(context) && Utilities.isOnline()) {
             retroNetworkCall(query, page);
         } else {
             Snackbar.make(findViewById(R.id.searchActivity), "Make sure your device is connected to the internet", Snackbar.LENGTH_LONG).show();
         }
 
     }
-    public void retroNetworkCall(String query, int page){
+
+    public void retroNetworkCall(String query, final int page) {
         final String BASE_URL = "https://api.nytimes.com/svc/search/v2/";
-        SharedPreferences sharedPreferences = context.getSharedPreferences("pref",Context.MODE_PRIVATE);
-        String date = sharedPreferences.getString("date","");
+        SharedPreferences sharedPreferences = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        String date = sharedPreferences.getString("date", "");
         //String newsDesk = sharedPreferences.getString("newsDesk","");
-        Boolean newsDeskBoolean = sharedPreferences.getBoolean("newsDeskBoolean",false);
+        Boolean newsDeskBoolean = sharedPreferences.getBoolean("newsDeskBoolean", false);
         Boolean art = sharedPreferences.getBoolean("art", false);
         Boolean fashion = sharedPreferences.getBoolean("fashion", false);
         Boolean sports = sharedPreferences.getBoolean("sports", false);
         String newsDesk = "news_desk:(";
-        if(art){
+        if (art) {
             newsDesk = newsDesk + "\"Art\" ";
         }
-        if(fashion){
+        if (fashion) {
             newsDesk = newsDesk + "\"Fashion\" ";
         }
-        if(sports){
+        if (sports) {
             newsDesk = newsDesk + "\"Sports\" ";
         }
         newsDesk = newsDesk + ")";
         String sortString;
-        int sort = sharedPreferences.getInt("sort",0);
-        if(sort == 0){
+        int sort = sharedPreferences.getInt("sort", 0);
+        if (sort == 0) {
             sortString = "Newest";
-        }
-        else {
+        } else {
             sortString = "Oldest";
         }
         Retrofit retrofit = new Retrofit.Builder()
@@ -200,19 +202,19 @@ public class SearchActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         Map<String, String> params = new HashMap<>();
-        if(newsDeskBoolean) {
+        if (newsDeskBoolean) {
             params.put("fq", newsDesk);
         }
         params.put("api-key", "ad717c2ec12d4ec28f3463dc0e619bc2");
         params.put("page", page + "");
-        if(query!="") {
+        if (query != "") {
             params.put("q", query);
         } else {
             searchQuery = "";
         }
-        params.put("sort",sortString);
+        params.put("sort", sortString);
 
-        if(date!="") {
+        if (date != "") {
             params.put("begin_date", date);
         }
 
@@ -223,37 +225,52 @@ public class SearchActivity extends AppCompatActivity {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
-                Log.d("DEBUG",response.toString());
-                List<Article> responseArticles = response.body().getResponse().getArticles();
-                articles.addAll(responseArticles);
-                adapter.notifyDataSetChanged();
+                Log.d("DEBUG", response.toString());
+                if (response.body().getStatus().equals("OK")) {
+                    //if (!(response.body().getResponse().equals(null))) {
+                        List<Article> responseArticles = response.body().getResponse().getArticles();
+                        if(responseArticles.size() !=0){
+                        articles.addAll(responseArticles);
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        if (page == 0) {
+                            Snackbar.make(findViewById(R.id.searchActivity), "No results found!!", Snackbar.LENGTH_LONG).show();
+                        } else {
+                            Snackbar.make(findViewById(R.id.searchActivity), "No more Search results", Snackbar.LENGTH_LONG).show();
+                        }
+                    }
+                } else {
+                    Snackbar.make(findViewById(R.id.searchActivity), "Oops something went wrong!!", Snackbar.LENGTH_LONG).show();
+                }
+
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.d("DEBUG",t.toString());
+                Log.d("DEBUG", t.toString());
             }
         });
     }
-    public void networkCall(String query,  int page){
-        SharedPreferences sharedPreferences = context.getSharedPreferences("pref",Context.MODE_PRIVATE);
-        String date = sharedPreferences.getString("date","");
-        String newsDesk = sharedPreferences.getString("newsDesk","");
-        int sort = sharedPreferences.getInt("sort",0);
+
+    public void networkCall(String query, int page) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        String date = sharedPreferences.getString("date", "");
+        String newsDesk = sharedPreferences.getString("newsDesk", "");
+        int sort = sharedPreferences.getInt("sort", 0);
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
         RequestParams params = new RequestParams();
-        if(newsDesk!="") {
+        if (newsDesk != "") {
             params.put("fq", newsDesk);
         }
         params.put("api-key", "ad717c2ec12d4ec28f3463dc0e619bc2");
         params.put("page", page);
         params.put("q", query);
 
-        if(date!="") {
+        if (date != "") {
             params.put("begin_date", date);
         }
-        Log.d("URL",url);
+        Log.d("URL", url);
         Log.d("Params", params.toString());
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override

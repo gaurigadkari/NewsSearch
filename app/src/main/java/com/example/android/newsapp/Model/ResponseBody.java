@@ -9,9 +9,17 @@ public class ResponseBody {
     @SerializedName("response")
     @Expose
     private Response response;
+    @SerializedName("status")
+    @Expose
+    private String status;
+
     public Response getResponse() {
         return response;
     }
+    public String getStatus() {
+        return status;
+    }
+
     public void setResponse(Response response) {
         this.response = response;
     }

@@ -20,6 +20,9 @@ public class Article {
     @SerializedName("web_url")
     @Expose
     String webUrl;
+    @SerializedName("snippet")
+    @Expose
+    String snippet;
     @SerializedName("headline")
     @Expose
     Headline headline;
@@ -33,6 +36,9 @@ public class Article {
 
     public String getWebUrl() {
         return webUrl;
+    }
+    public String getSnippet() {
+        return snippet;
     }
 
     public Headline getHeadline() {

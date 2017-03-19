@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NewsApp</string>
+    <string name="app_name">News Now</string>
     <string name="enter_search_query_here">Enter Search query here</string>
 
     <!-- TODO: Remove or change this placeholder text -->

@@ -1,8 +1,14 @@
 package com.example.android.newsapp.Activities;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +24,7 @@ import android.widget.Toast;
 import com.example.android.newsapp.Article;
 import com.example.android.newsapp.R;
 import com.example.android.newsapp.Utilities.Utilities;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import org.parceler.Parcels;
 
@@ -27,30 +34,54 @@ public class ArticleActivity extends AppCompatActivity {
     private ShareActionProvider shareActionProvider;
     Intent intent;
     String urlShare;
+    int requestCode = 100;
+    AVLoadingIndicatorView avi;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_article);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Article article = (Article) Parcels.unwrap(getIntent().getParcelableExtra("article"));
-        WebView webView = (WebView) findViewById(R.id.wvArticle);
-        webView.setWebViewClient(new WebViewClient(){
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                view.loadUrl(url);
+//        WebView webView = (WebView) findViewById(R.id.wvArticle);
+//        webView.setWebViewClient(new WebViewClient() {
+//            @Override
+//            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+//                view.loadUrl(url);
+//
+//                return true;
+//            }
+//        });
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        // set toolbar color and/or setting custom actions before invoking build()
+        // Once ready, call CustomTabsIntent.Builder.build() to create a CustomTabsIntent
+        //CustomTabsIntent customTabsIntent = builder.build();
 
-                return true;
-            }
-        });
-        if(Utilities.isNetworkAvailable(this) && Utilities.isOnline()) {
-            webView.loadUrl(article.getWebUrl());
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_share_white_48dp);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, article.getWebUrl());
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                requestCode,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setActionButton(bitmap, "Share Link", pendingIntent, true);
+
+        CustomTabsIntent customTabsIntent = builder.build();
+        builder.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+
+        if (Utilities.isNetworkAvailable(this) && Utilities.isOnline()) {
+        // and launch the desired Url with CustomTabsIntent.launchUrl()
+            customTabsIntent.launchUrl(this, Uri.parse(article.getWebUrl()));
+            //builder.setStartAnimations(this, android.R.anim.bounce_interpolator, 0);
+            //webView.loadUrl(article.getWebUrl());
         } else {
             Snackbar.make(findViewById(R.id.articleActivity), "Make sure your device is connected to the internet", Snackbar.LENGTH_LONG).show();
         }
 
         urlShare = article.getWebUrl();
     }
+
     public void attachShareIntentAction() {
         if (shareActionProvider != null && intent != null)
             shareActionProvider.setShareIntent(intent);
@@ -87,7 +118,8 @@ public class ArticleActivity extends AppCompatActivity {
         }
         return true;
     }
-    public void shareIntent(){
+
+    public void shareIntent() {
         intent = new Intent(Intent.ACTION_SEND);
         //intent.setAction(Intent.ACTION_SEND);
         intent.setType("text/plain");
