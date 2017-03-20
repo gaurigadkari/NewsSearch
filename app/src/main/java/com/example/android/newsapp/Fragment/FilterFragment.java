@@ -75,6 +75,7 @@ public class FilterFragment extends DialogFragment {
                 //(CheckBox) view.findViewById(R.id.checkbox_sports);
         Button btnSave = binding.btnSave;
                 //(Button) view.findViewById(R.id.btnSave);
+
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("pref",Context.MODE_PRIVATE);
         if(sharedPreferences.getBoolean("art", false)){
             chkArts.setChecked(true);
@@ -99,58 +100,54 @@ public class FilterFragment extends DialogFragment {
             }
 
         };
-        etDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        etDate.setOnClickListener(view1 -> {
 //                DatePickerFragment newFragment = new DatePickerFragment();
 //                newFragment.show(getFragmentManager(), "datePicker");
-                final Calendar c = Calendar.getInstance();
-                int year = c.get(Calendar.YEAR);
-                int month = c.get(Calendar.MONTH);
-                int day = c.get(Calendar.DAY_OF_MONTH);
-                new DatePickerDialog(getActivity(), date, year, month, day).show();
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), date, year, month, day);
+            //datePickerDialog.getDatePicker().setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+            datePickerDialog.show();
 
-            }
         });
 
 
 
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        btnSave.setOnClickListener(view12 -> {
 
-                String date = etDate.getText().toString();
-                //String sort = "sort=" + spinner.getSelectedItemPosition();
-                int sort = spinner.getSelectedItemPosition();
-                boolean news_desk = (chkArts.isChecked() || chkFashion.isChecked() || chkSports.isChecked());
-                String newsDesk = "news_desk:(";
-                if(chkArts.isChecked()){
-                    newsDesk = newsDesk + "\"Art\" ";
-                }
-                if(chkFashion.isChecked()){
-                    newsDesk = newsDesk + "\"Fashion\" ";
-                }
-                if(chkSports.isChecked()){
-                    newsDesk = newsDesk + "\"Sports\" ";
-                }
-                newsDesk = newsDesk + ")";
-                Context context = getActivity();
-                SharedPreferences sharedPref = context.getSharedPreferences("pref",Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString("date",beginDate);
-                editor.putBoolean("newsDeskBoolean",news_desk);
-                editor.putString("displayDate", date);
-                editor.putInt("sort",sort);
-                if(news_desk) {
-                    editor.putString("newsDesk", newsDesk);
-                }
-                editor.putBoolean("art",chkArts.isChecked());
-                editor.putBoolean("fashion",chkFashion.isChecked());
-                editor.putBoolean("sports", chkSports.isChecked());
-                editor.commit();
-                getDialog().dismiss();
-
+            String date1 = etDate.getText().toString();
+            //String sort = "sort=" + spinner.getSelectedItemPosition();
+            int sort = spinner.getSelectedItemPosition();
+            boolean news_desk = (chkArts.isChecked() || chkFashion.isChecked() || chkSports.isChecked());
+            String newsDesk = "news_desk:(";
+            if(chkArts.isChecked()){
+                newsDesk = newsDesk + "\"Art\" ";
             }
+            if(chkFashion.isChecked()){
+                newsDesk = newsDesk + "\"Fashion\" ";
+            }
+            if(chkSports.isChecked()){
+                newsDesk = newsDesk + "\"Sports\" ";
+            }
+            newsDesk = newsDesk + ")";
+            Context context = getActivity();
+            SharedPreferences sharedPref = context.getSharedPreferences("pref",Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("date",beginDate);
+            editor.putBoolean("newsDeskBoolean",news_desk);
+            editor.putString("displayDate", date1);
+            editor.putInt("sort",sort);
+            if(news_desk) {
+                editor.putString("newsDesk", newsDesk);
+            }
+            editor.putBoolean("art",chkArts.isChecked());
+            editor.putBoolean("fashion",chkFashion.isChecked());
+            editor.putBoolean("sports", chkSports.isChecked());
+            editor.commit();
+            getDialog().dismiss();
+
         });
 
 
