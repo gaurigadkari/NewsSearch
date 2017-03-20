@@ -2,10 +2,13 @@ package com.example.android.newsapp.Activities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.MatrixCursor;
 import android.databinding.DataBindingUtil;
+import android.provider.BaseColumns;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,8 +19,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import android.support.v7.widget.SearchView;
 
 import com.example.android.newsapp.Adapters.ArticleArrayAdapter;
+import com.example.android.newsapp.Adapters.SuggestionAdapter;
 import com.example.android.newsapp.Article;
 import com.example.android.newsapp.Utilities.EndlessRecyclerViewScrollListener;
 import com.example.android.newsapp.Fragment.FilterFragment;
@@ -26,6 +31,7 @@ import com.example.android.newsapp.Network.ApiInterface;
 import com.example.android.newsapp.R;
 import com.example.android.newsapp.Utilities.Utilities;
 import com.example.android.newsapp.databinding.ActivitySearchBinding;
+import com.google.common.collect.Lists;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -57,7 +63,10 @@ public class SearchActivity extends AppCompatActivity {
     private String searchQuery;
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
-
+    SimpleCursorAdapter cursorAdapter;
+    ArrayList<String> suggestions;
+    List<String> items;
+    SuggestionAdapter<String> stringSuggestionAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,8 +75,10 @@ public class SearchActivity extends AppCompatActivity {
         toolbar = binding.toolbar;
         //= (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(0xFFFFFFFF);
         ButterKnife.bind(this);
         grdResults = binding.grdNewsResults;
+
         //grdResults = (RecyclerView) findViewById(R.id.grdNewsResults);
         context = this;
         articles = new ArrayList<>();
@@ -76,6 +87,9 @@ public class SearchActivity extends AppCompatActivity {
         grdResults.setLayoutManager(staggeredGridLayoutManager);
         adapter = new ArticleArrayAdapter(this, articles);
         grdResults.setAdapter(adapter);
+        final String[] from = new String[] {"cityName"};
+        final int[] to = new int[] {android.R.id.text1};
+        //cursorAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null, from, to);
 
         scrollListener = new EndlessRecyclerViewScrollListener(staggeredGridLayoutManager) {
             @Override
@@ -118,6 +132,14 @@ public class SearchActivity extends AppCompatActivity {
         //final SearchView filterview = (SearchView) MenuItemCompat.getActionView(filterItem);
 
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        SearchView.SearchAutoComplete searchSrcTextView = (SearchView.SearchAutoComplete) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        //List<String> items = Lists.newArrayList(suggestions);
+        items = new ArrayList<String>();
+        stringSuggestionAdapter = new SuggestionAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, items);
+        searchSrcTextView.setThreshold(0);
+        searchSrcTextView.setAdapter(stringSuggestionAdapter);
+        //SearchView.SearchAutoComplete();
+        //searchView.setSuggestionsAdapter(cursorAdapter);
         filterItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
@@ -137,6 +159,8 @@ public class SearchActivity extends AppCompatActivity {
                 search(query);
                 searchView.clearFocus();
                 searchView.setQuery("", false);
+                items.add(query);
+                stringSuggestionAdapter.notifyDataSetChanged();
                 return true;
             }
 
@@ -148,6 +172,7 @@ public class SearchActivity extends AppCompatActivity {
 
         return true;
     }
+
 
 
     //@OnClick(R.id.btnSearch)
@@ -179,6 +204,8 @@ public class SearchActivity extends AppCompatActivity {
         Boolean art = sharedPreferences.getBoolean("art", false);
         Boolean fashion = sharedPreferences.getBoolean("fashion", false);
         Boolean sports = sharedPreferences.getBoolean("sports", false);
+        Boolean education = sharedPreferences.getBoolean("education", false);
+        Boolean health = sharedPreferences.getBoolean("health", false);
         String newsDesk = "news_desk:(";
         if (art) {
             newsDesk = newsDesk + "\"Art\" ";
@@ -188,6 +215,12 @@ public class SearchActivity extends AppCompatActivity {
         }
         if (sports) {
             newsDesk = newsDesk + "\"Sports\" ";
+        }
+        if (education){
+            newsDesk = newsDesk + "\"Education\" ";
+        }
+        if (health){
+            newsDesk = newsDesk + "\"Health\" ";
         }
         newsDesk = newsDesk + ")";
         String sortString;
@@ -226,7 +259,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
                 Log.d("DEBUG", response.toString());
-                Log.d("DEBUG", response.body().toString());
+                //Log.d("DEBUG", response.body().toString());
                 if (response.body() != null) {
                     if (response.body().getStatus().equals("OK")) {
                         //if (!(response.body().getResponse().equals(null))) {

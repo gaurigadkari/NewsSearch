@@ -11,4 +11,6 @@
     <string name="art">Art</string>
     <string name="fashion_and_Style">Fashion &amp; Style</string>
     <string name="sports">Sports</string>
+    <string name="education">Education</string>
+    <string name="health">Health</string>
 </resources>

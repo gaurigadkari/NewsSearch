@@ -47,11 +47,25 @@
                 android:layout_below="@id/checkbox_fashion_and_style"
                 android:text="@string/sports" />
 
+            <CheckBox
+                android:id="@+id/checkbox_health"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/checkbox_sports"
+                android:text="@string/health" />
+
+            <CheckBox
+                android:id="@+id/checkbox_education"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/checkbox_health"
+                android:text="@string/education" />
+
             <Button
                 android:id="@+id/btnSave"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/checkbox_sports"
+                android:layout_below="@id/checkbox_education"
                 android:layout_centerHorizontal="true"
                 android:background="@color/colorPrimary"
                 android:text="Save"

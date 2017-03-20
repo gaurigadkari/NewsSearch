@@ -73,6 +73,8 @@ public class FilterFragment extends DialogFragment {
                 //(CheckBox) view.findViewById(R.id.checkbox_fashion_and_style);
         final CheckBox chkSports = binding.checkboxSports;
                 //(CheckBox) view.findViewById(R.id.checkbox_sports);
+        final CheckBox chkHealth = binding.checkboxHealth;
+        final CheckBox chkEducation = binding.checkboxEducation;
         Button btnSave = binding.btnSave;
                 //(Button) view.findViewById(R.id.btnSave);
 
@@ -85,6 +87,12 @@ public class FilterFragment extends DialogFragment {
         }
         if(sharedPreferences.getBoolean("sports", false)){
             chkSports.setChecked(true);
+        }
+        if(sharedPreferences.getBoolean("health", false)){
+            chkHealth.setChecked(true);
+        }
+        if(sharedPreferences.getBoolean("education", false)){
+            chkEducation.setChecked(true);
         }
         etDate.setText(sharedPreferences.getString("displayDate", ""));
         int sortOrder = sharedPreferences.getInt("sort", 0);
@@ -120,7 +128,7 @@ public class FilterFragment extends DialogFragment {
             String date1 = etDate.getText().toString();
             //String sort = "sort=" + spinner.getSelectedItemPosition();
             int sort = spinner.getSelectedItemPosition();
-            boolean news_desk = (chkArts.isChecked() || chkFashion.isChecked() || chkSports.isChecked());
+            boolean news_desk = (chkArts.isChecked() || chkFashion.isChecked() || chkSports.isChecked() || chkEducation.isChecked() || chkHealth.isChecked());
             String newsDesk = "news_desk:(";
             if(chkArts.isChecked()){
                 newsDesk = newsDesk + "\"Art\" ";
@@ -130,6 +138,12 @@ public class FilterFragment extends DialogFragment {
             }
             if(chkSports.isChecked()){
                 newsDesk = newsDesk + "\"Sports\" ";
+            }
+            if(chkEducation.isChecked()){
+                newsDesk = newsDesk + "\"Education\" ";
+            }
+            if(chkHealth.isChecked()){
+                newsDesk = newsDesk + "\"Health\" ";
             }
             newsDesk = newsDesk + ")";
             Context context = getActivity();
@@ -145,6 +159,8 @@ public class FilterFragment extends DialogFragment {
             editor.putBoolean("art",chkArts.isChecked());
             editor.putBoolean("fashion",chkFashion.isChecked());
             editor.putBoolean("sports", chkSports.isChecked());
+            editor.putBoolean("health", chkHealth.isChecked());
+            editor.putBoolean("education", chkEducation.isChecked());
             editor.commit();
             getDialog().dismiss();
 
