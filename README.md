@@ -43,7 +43,8 @@ The following **additional** features are implemented:
 
 * [x] As soon as user opens the app, we make a network call to show them current news.
 * [x] Our app remembers your old searches and lists your recent search in a drop down.
-* [x] Added placeholder images for news items.
+* [x] Added placeholder images for news items. 
+* [x] Filters are stored in shared preferences so that they will be there even after application closes.
 * [x] Added a Splash screen.
 * [x] Added additional news desk values health and education.
 * [x] Fixed crashes and handled no response and error response from server.
