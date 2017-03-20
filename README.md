@@ -47,6 +47,8 @@ The following **additional** features are implemented:
 * [x] Added a Splash screen.
 * [x] Added additional news desk values health and education.
 * [x] Fixed crashes and handled no response and error response from server.
+* [x] Added Snackbar for internet connection and weird responses.
+* [x] Added new app icon and changed application name
 
 ## Video Walkthrough
 
